@@ -23,7 +23,7 @@ $api.interceptors.response.use(
     if (error.response.status === 403) {
       localStorage.removeItem("accessToken");
       localStorage.removeItem("userId");
-      //window.location.href = '/login'
+      window.location.href = "/login";
     }
 
     return error;

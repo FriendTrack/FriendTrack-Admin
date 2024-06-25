@@ -15,12 +15,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { usePostQuestion } from "@/hooks/usePostQuestion";
+import { Question } from "@/hooks/useGetQuestions";
+import { usePutQuestion } from "@/hooks/usePutQuestion";
 import { useState } from "react";
+import { QuestionType } from "./AddQuestionDialog";
 
-interface AddQuestionDialogProps {
+interface EditQuestionDialogProps {
   open: boolean;
   onOpenChange: () => void;
+  question: Question;
 }
 const QUESTION_VALUES = [
   "Уважение",
@@ -36,15 +39,20 @@ const QUESTION_TYPES = [
   "EMPATHY",
   "TIME",
 ] as const;
-export type QuestionType = (typeof QUESTION_TYPES)[number];
 
-const AddQuestionDialog = (props: AddQuestionDialogProps) => {
-  const { mutate, isPending } = usePostQuestion(() => props.onOpenChange());
-  const [question, setQuestion] = useState("");
-  const [questionType, setQuestionType] = useState<QuestionType>("RESPECT");
+const EditQuestionDialog = ({
+  question: openedQuestion,
+  ...props
+}: EditQuestionDialogProps) => {
+  const { mutate, isPending } = usePutQuestion(() => props.onOpenChange());
+  const [question, setQuestion] = useState(openedQuestion.question);
+  const [questionType, setQuestionType] = useState<QuestionType>(
+    openedQuestion.fieldType
+  );
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     mutate({
+      id: openedQuestion.id,
       question: question,
       fieldType: questionType,
     });
@@ -53,7 +61,7 @@ const AddQuestionDialog = (props: AddQuestionDialogProps) => {
     <Dialog {...props}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Создание вопроса</DialogTitle>
+          <DialogTitle>Редактирование вопроса</DialogTitle>
         </DialogHeader>
         <form onSubmit={(e) => onSubmit(e)}>
           <Label htmlFor="question" className="block p-1">
@@ -70,7 +78,7 @@ const AddQuestionDialog = (props: AddQuestionDialogProps) => {
           </Label>
           <Select
             onValueChange={(v: QuestionType) => setQuestionType(v)}
-            defaultValue="RESPECT"
+            defaultValue={openedQuestion.fieldType}
           >
             <SelectTrigger>
               <SelectValue placeholder="Выберите тип вопроса" />
@@ -94,4 +102,4 @@ const AddQuestionDialog = (props: AddQuestionDialogProps) => {
   );
 };
 
-export default AddQuestionDialog;
+export default EditQuestionDialog;

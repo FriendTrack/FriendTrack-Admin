@@ -7,12 +7,13 @@ interface PostQuestionBody {
   fieldType: QuestionType;
 }
 
-export const usePostQuestion = () => {
+export const usePostQuestion = (onSuccessCallback: () => void) => {
   const queryClient = useQueryClient();
   const { mutate, isPending, isError } = useMutation({
     mutationFn: (data: PostQuestionBody) => $api.post("question", data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["questions"] });
+      onSuccessCallback();
     },
   });
   return { mutate, isPending, isError };

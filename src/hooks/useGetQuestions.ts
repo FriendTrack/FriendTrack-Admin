@@ -1,10 +1,11 @@
 import { $api } from "@/lib/api/instance";
+import { QuestionType } from "@/pages/rootPage/AddQuestionDialog";
 import { useQuery } from "@tanstack/react-query";
 
 export interface Question {
   id: string;
   question: string;
-  fieldType: "ALL" | "RESPECT" | "COMMUNICATION" | "TRUST" | "EMPATHY" | "TIME";
+  fieldType: QuestionType;
 }
 
 export interface GetQuestionResponse {
@@ -19,7 +20,7 @@ export const useGetQuestions = () => {
     queryFn: () =>
       $api.get<GetQuestionResponse>("question", {
         params: {
-          size: 100,
+          size: 10000,
         },
       }),
     queryKey: ["questions"],

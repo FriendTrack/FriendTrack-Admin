@@ -21,7 +21,7 @@ import {
 import { Question, useGetQuestions } from "@/hooks/useGetQuestions";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
-import AddQuestionDialog from "./AddQuestionDialog";
+import AddQuestionDialog, { QuestionType } from "./AddQuestionDialog";
 import EditQuestionDialog from "./EditQuestionDialog";
 
 interface FieldTypeValue {
@@ -59,6 +59,8 @@ const RootPage = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [editedQuestion, setEditedQuestion] = useState<Question | null>(null);
   const [questionSearchTerm, setQuestionSearchTerm] = useState("");
+  const [questionSearchType, setQuestionSearchType] =
+    useState<QuestionType | null>(null);
   const { data, isLoading } = useGetQuestions();
   if (isLoading) {
     return (
@@ -96,7 +98,9 @@ const RootPage = () => {
             </div>
             <div>
               <Label htmlFor="question_type">Тип вопроса</Label>
-              <Select>
+              <Select
+                onValueChange={(v: QuestionType) => setQuestionSearchType(v)}
+              >
                 <SelectTrigger>
                   <SelectValue id="question_type" />
                 </SelectTrigger>
@@ -133,6 +137,12 @@ const RootPage = () => {
                 question.question
                   .toLowerCase()
                   .includes(questionSearchTerm.toLowerCase())
+              )
+              .filter(
+                (q) =>
+                  (questionSearchType !== null &&
+                    questionSearchType === q.fieldType) ||
+                  questionSearchType === null
               )
               .map((question) => (
                 <TableRow

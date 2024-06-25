@@ -15,6 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useDeleteQuestions } from "@/hooks/useDeleteQuestions";
 import { Question } from "@/hooks/useGetQuestions";
 import { usePutQuestion } from "@/hooks/usePutQuestion";
 import { useState } from "react";
@@ -44,14 +45,19 @@ const EditQuestionDialog = ({
   question: openedQuestion,
   ...props
 }: EditQuestionDialogProps) => {
-  const { mutate, isPending } = usePutQuestion(() => props.onOpenChange());
+  const { mutate: putQ, isPending: isPendingQ } = usePutQuestion(() =>
+    props.onOpenChange()
+  );
+  const { mutate: deleteQ, isPending: isDeletingQ } = useDeleteQuestions(() =>
+    props.onOpenChange()
+  );
   const [question, setQuestion] = useState(openedQuestion.question);
   const [questionType, setQuestionType] = useState<QuestionType>(
     openedQuestion.fieldType
   );
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    mutate({
+    putQ({
       id: openedQuestion.id,
       question: question,
       fieldType: questionType,
@@ -93,8 +99,20 @@ const EditQuestionDialog = ({
               </SelectGroup>
             </SelectContent>
           </Select>
-          <Button type="submit" className="w-full bg-green-500 mt-6">
-            {isPending ? "Создание..." : "Создать"}
+          <Button
+            type="submit"
+            className="w-full bg-green-500 mt-6 hover:bg-green-800"
+          >
+            {isPendingQ ? "Создание..." : "Создать"}
+          </Button>
+          <Button
+            type="button"
+            className="w-full bg-red-500 mt-2 hover:bg-red-800"
+            onClick={() => {
+              deleteQ(openedQuestion.id);
+            }}
+          >
+            {isDeletingQ ? "Удаление..." : "Удалить"}
           </Button>
         </form>
       </DialogContent>

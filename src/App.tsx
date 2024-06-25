@@ -1,7 +1,14 @@
-import { Button } from "./components/ui/button";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { RouterProvider } from "react-router-dom";
+import "./index.css";
+import { router } from "./router.tsx";
 
-function App() {
-  return <Button>App</Button>;
-}
+const queryClient = new QueryClient();
 
-export default App;
+export const App = () => {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <RouterProvider router={router} />
+    </QueryClientProvider>
+  );
+};
